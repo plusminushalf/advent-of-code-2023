@@ -1,6 +1,6 @@
 # Code of Advent 2023 in Rust
 
-This is my attempt to learn rest via [Advent of code 2023](https://adventofcode.com/2023).
+This is my attempt to learn rust via [Advent of code 2023](https://adventofcode.com/2023).
 
 ## Installation
 
