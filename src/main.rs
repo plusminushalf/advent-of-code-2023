@@ -2,6 +2,12 @@ mod day3 {
     pub mod process;
 }
 
+use day3::process::process;
+
 fn main() {
-    day3::process::process();
+
+    let result: u32 = process();
+
+    print!("Sum: {}", result);
+    println!()
 }
