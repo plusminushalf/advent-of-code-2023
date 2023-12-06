@@ -131,9 +131,12 @@ fn near_symbol(input: &Vec<Vec<char>>, i: usize, j: usize) -> Result<u32, &'stat
     return Ok(top_left * top * top_right * left * right * bottom_left * bottom * bottom_right);
 }
 
-pub fn process() -> u32 {
+pub fn part1(_filename: &str) -> u32 {
+    return 5;
+}
+
+pub fn part2(filename: &str) -> u32 {
     // Your function implementation
-    let filename = "src/day3/input.text";
     let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
 
     let mut input: Vec<Vec<char>> = Vec::new();
