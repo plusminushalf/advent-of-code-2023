@@ -1,4 +1,4 @@
-use std::fs;
+use std::{fs, thread, sync::Arc};
 
 fn iterate_file(filename: &str) -> String {
     return fs::read_to_string(filename).expect("Something went wrong reading the file");
@@ -73,39 +73,43 @@ fn get_maps(file: &str) -> Vec<Vec<SinglePath>> {
         .collect();
 }
 
-fn get_lowest_location(file: &str, seeds: Vec<u64>) -> u64 {
-    let maps: Vec<Vec<SinglePath>> = get_maps(&file);
+fn get_lowest_location(maps: Arc<Vec<Vec<SinglePath>>>, seed: u64) -> u64 {
 
-    seeds
-        .iter()
-        .map(|seed: &u64| {
-            maps.iter().fold(*seed, |location, single_paths| {
-                single_paths
-                    .iter()
-                    .fold(
-                        (location, false),
-                        |(location, found), single_path: &SinglePath| {
-                            if found {
-                                return (location, found);
-                            }
 
-                            if single_path.source_start <= location
-                                && single_path.source_start + single_path.length > location
-                            {
-                                return (
-                                    (location - single_path.source_start)
-                                        + single_path.destination_start,
-                                    true,
-                                );
-                            }
-                            return (location, false);
-                        },
-                    )
-                    .0
-            })
+    print!("Here");
+    let arc_clone_maps = Arc::clone(&maps);
+
+    thread::spawn(move || {                                                                            
+        arc_clone_maps.iter().fold(seed, |location, single_paths| {
+            single_paths
+                .iter()
+                .fold(
+                    (location, false),
+                    |(location, found), single_path: &SinglePath| {
+
+                        println!("SinglePath: {:?}", single_path);
+
+                        if found {
+                            return (location, found);
+                        }
+
+                        if single_path.source_start <= location
+                            && single_path.source_start + single_path.length > location
+                        {
+                            return (
+                                (location - single_path.source_start)
+                                    + single_path.destination_start,
+                                true,
+                            );
+                        }
+                        return (location, false);
+                    },
+                )
+                .0
         })
-        .min()
-        .unwrap()
+    })
+    .join()
+    .unwrap()
 }
 
 /**
@@ -114,17 +118,25 @@ fn get_lowest_location(file: &str, seeds: Vec<u64>) -> u64 {
 pub fn part1(filename: &str) -> u32 {
     let file: String = iterate_file(filename);
     let seeds: Vec<u64> = get_seeds(&file);
+    let maps: Vec<Vec<SinglePath>> = get_maps(&file);
+    let arc_maps = Arc::new(maps);
 
-    get_lowest_location(&file, seeds) as u32
+    seeds
+        .iter()
+        .map(|seed: &u64| get_lowest_location(Arc::clone(&arc_maps), *seed) as u32)
+        .min()
+        .unwrap()
 }
 
-/**
- * Very Very slow solution
- * TODO: Optimize
- */
 pub fn part2(filename: &str) -> u32 {
     let file: String = iterate_file(filename);
     let seeds: Vec<u64> = get_seeds_from_range(&file);
+    let maps: Vec<Vec<SinglePath>> = get_maps(&file);
+    let arc_maps = Arc::new(maps);
 
-    get_lowest_location(&file, seeds) as u32
+    seeds
+        .iter()
+        .map(|seed: &u64| get_lowest_location(Arc::clone(&arc_maps), *seed) as u32)
+        .min()
+        .unwrap()
 }
