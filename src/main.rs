@@ -5,6 +5,7 @@ mod day3;
 mod day4;
 mod day5;
 mod day6;
+mod day7;
 
 fn main() {
     let arguments: Vec<String> = env::args().collect();
@@ -16,6 +17,8 @@ fn main() {
     };
 
     let functions = [
+        day7::part1,
+        day7::part2,
         day6::part1,
         day6::part2,
         day5::part1,
@@ -38,7 +41,7 @@ fn main() {
 
     for day in 1..(days + 1) {
         print!("Day {}:", (functions.len() / 2) - day + 1);
-        let filename: String = format!("src/day{}/{}", day, run_mode);
+        let filename: String = format!("src/day{}/{}", (functions.len() / 2) - day + 1, run_mode);
         println!();
         for part in 1..3 {
             print!("\tpart {}: {}", part, functions[function_index](&filename));
