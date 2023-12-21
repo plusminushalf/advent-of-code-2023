@@ -113,20 +113,18 @@ fn get_set_type(set: &str, trick: bool) -> SetType {
     }
 
     if unique_cards == 2 {
+        if trick && contains_jack {
+            return SetType::FiveOfAKind;
+        }
+
         let mut counts: Vec<&u32> = cards.values().collect();
         counts.sort();
 
         if *counts[0] == 2 && *counts[1] == 3 {
-            if trick && contains_jack {
-                return SetType::FiveOfAKind;
-            }
             return SetType::FullHouse;
         }
 
         if *counts[0] == 1 && *counts[1] == 4 {
-            if trick && contains_jack {
-                return SetType::FiveOfAKind;
-            }
             return SetType::FourOfAKind;
         }
     }
